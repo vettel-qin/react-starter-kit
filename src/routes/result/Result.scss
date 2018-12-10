@@ -1,0 +1,12 @@
+.root {
+  color: blue;
+
+  .logo {
+    width: rem(206);
+    height: rem(33);
+    background-image: url(~/assets/logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+}

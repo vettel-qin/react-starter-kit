@@ -1,0 +1,16 @@
+@import '~/style/variables.scss';
+
+.root {
+  color: blue;
+
+  @include ellipsis;
+
+  .logo {
+    width: rem(206);
+    height: rem(33);
+    background-image: url(~/assets/logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+}
