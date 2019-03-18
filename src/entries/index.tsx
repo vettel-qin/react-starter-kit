@@ -5,7 +5,6 @@ import bootstrap from '~/core/bootstrap';
 
 import App from '../components/App';
 import Home from '../routes/home';
-import Result from '../routes/result';
 
 const render = () => {
   ReactDOM.render(
@@ -13,7 +12,6 @@ const render = () => {
       <Router>
         <Switch>
           <Route path="/" exact={true} component={Home} />
-          <Route path="/result" exact={true} component={Result} />
         </Switch>
       </Router>
     </App>,

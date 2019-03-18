@@ -55,5 +55,7 @@ module.exports = {
     'order/order': ['custom-properties', 'dollar-variables', 'at-variables', 'declarations', 'at-rules', 'rules'],
 
     'order/properties-order': [],
+
+    'no-missing-end-of-source-newline': false
   }
 }

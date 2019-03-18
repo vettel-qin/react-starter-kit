@@ -2,14 +2,16 @@ import React, { Component } from 'react';
 import s from './Home.scss';
 
 class Home extends Component {
+
+  public componentWillMount() {
+  }
+
   public render() {
     return (
-      <section className={s.root}>
-        home
-        <div className={s.logo} />
-      </section>
+      <div className={s.main}>
+        react-typescript-starter
+      </div>
     );
   }
 }
-
 export default Home;

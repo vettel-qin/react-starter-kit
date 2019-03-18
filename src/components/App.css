@@ -15,10 +15,11 @@ body {
   user-select: none;
   margin: 0;
   padding: 0;
+  line-height: 1.15;
 }
 
 body {
-  font-family: 'Helvetica Neun', Helvetica, STHeiTi, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, STHeiTi, sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -53,6 +54,16 @@ input {
 
 :global(.flex-4) {
   flex: 4;
+}
+
+:global(.clearfix::before),
+:global(.clearfix::after) {
+  display: table;
+  content: ' ';
+}
+
+:global(.clearfix::after) {
+  clear: both;
 }
 
 :global(#react-root) {

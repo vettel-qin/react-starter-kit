@@ -1,38 +1,34 @@
 import path from 'path';
-import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlguin from 'mini-css-extract-plugin';
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 import OptimizeCSSAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import DotenvWebpack from 'dotenv-webpack';
 
 import * as paths from './paths.config';
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.argv.includes('--dev');
+const isProd = process.argv.includes('--prod');
 
-const webpackConfig: webpack.Configuration = {
-  entry: [
-    './src/entries/index.tsx'
-  ],
- 
+module.exports = {
+  mode: isDev ? 'development' : 'production',
+
+  entry: ['./src/core/polyfills', './src/entries/index.tsx'],
+
   output: {
     path: paths.BUILD_DIR,
     filename: isDev ? '[name].js' : '[name].[chunkhash:8].js',
-    chunkFilename: isDev ? 'chunks/[name].js' : 'chunks/[name].[chunkhash:8].js',
-    publicPath: ''
+    chunkFilename: isDev
+      ? 'chunks/[name].js'
+      : 'chunks/[name].[chunkhash:8].js',
+    publicPath: isProd ? paths.PUBLIC_URL : '',
   },
 
   resolve: {
-    modules: ["node_modules"],
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
-    // plugins: [
-    //   new TsconfigPathsPlugin({
-    //     //配置文件引入tsconfig.json
-    //     configFile: path.resolve(__dirname, '../tsconfig.json')
-    //     //configFile: path.join(__dirname, './../', 'tsconfig.json')
-    //   })
-    // ]
+    modules: ['node_modules'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
-      "~": paths.SRC_DIR
-    }
+      '~': paths.SRC_DIR
+    },
   },
 
   module: {
@@ -40,35 +36,35 @@ const webpackConfig: webpack.Configuration = {
       {
         test: /\.ts(x?)$/,
         use: [
-          //tsc编译后，再用babel处理
+          // tsc编译后，再用babel处理
           {
-            loader: 'babel-loader'
+            loader: 'babel-loader',
           },
           {
             loader: 'ts-loader',
             options: {
               // 加快编译速度
               transpileOnly: true,
-              //指定特定的ts编译配置，为了区分脚本的ts配置
-              configFile: path.resolve(__dirname, '../tsconfig.json')
+              // 指定特定的ts编译配置，为了区分脚本的ts配置
+              configFile: path.resolve(__dirname, '../tsconfig.json'),
             }
           }
         ],
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
 
       {
         test: /\.(css|less|sass|scss)$/,
         rules: [
           {
-            loader: isDev ? 'style-loader' : MiniCssExtractPlguin.loader,
+            loader: isDev ? 'style-loader' : MiniCssExtractPlguin.loader
           },
           {
             exclude: paths.SRC_DIR,
             loader: 'css-loader',
             options: {
-              sourceMap: isDev
-            }
+              sourceMap: isDev,
+            },
           },
 
           {
@@ -77,62 +73,35 @@ const webpackConfig: webpack.Configuration = {
             options: {
               sourceMap: isDev,
               modules: true,
-            }
+            },
           },
 
           {
             loader: 'postcss-loader',
             options: {
-              plugins: [
-                require('autoprefixer')({})
-              ]
+              plugins: [require('autoprefixer')({})]
             }
           },
-           
+
           {
             test: /\.(scss|sass)$/,
             loader: 'sass-loader',
             options: {
               data: '@import "style/variables.scss";',
               sourceMap: isDev,
-              includePaths: [paths.SRC_DIR],
-            }
+              includePaths: [paths.SRC_DIR]
+            },
           }
         ]
       },
 
       {
-        test: /\.(bmp|gif|jgp|jpeg|png|svg)$/,
-        oneOf: [
-          {
-            issuer: /\.(css|less|scss|sass)$/,
-            oneOf: [
-              {
-                test: /\.svg$/,
-                loader: 'svg-url-loader',
-                options: {
-                  name: 'assets/[hash:8].[ext]',
-                  limit: 8192, //8kb
-                }
-              },
-
-              {
-                loader: 'url-loader',
-                options: {
-                  name: 'assets/[hash:8].[ext]',
-                  limit: 8192. //8kb
-                }
-              }
-            ]
-          },
-
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'assets/[hash:8].[ext]',
-            }
-          }
-        ]
+        test: /\.(png|jpg|jpeg|gif|ico|svg|eot|ttf|woff|woff2)$/,
+        loader: 'url-loader',
+        options: {
+          name: 'assets/[hash:8].[ext]',
+          limit: 8196,
+        }
       },
 
       {
@@ -149,8 +118,8 @@ const webpackConfig: webpack.Configuration = {
         options: {
           name: 'media/[hash].[ext]',
         }
-      }
-    ]
+      },
+    ],
   },
 
   plugins: [
@@ -161,29 +130,37 @@ const webpackConfig: webpack.Configuration = {
         // 是对html文件进行压缩
         removeComments: true,
         collapseWhitespace: true,
-        removeAttributeQuotes: true, //去掉属性的双引号
+        removeAttributeQuotes: true, // 去掉属性的双引号
       },
-      hash: true //为了开发中js有缓存效果，所以加入hash,这样可以有效避免缓存js
+      hash: true, // 为了开发中js有缓存效果，所以加入hash,这样可以有效避免缓存js
+      favicon: './src/entries/favicon.ico',
     }),
 
     new MiniCssExtractPlguin({
-      filename: 'chunks/[name].[contenthash:8].css',
-      chunkFilename: 'chunks/[name].[contenthash:8].css',
-    })
+      filename: '[name].[contenthash:8].css',
+      chunkFilename: '[name].[contenthash:8].css',
+    }),
+
+    new DotenvWebpack({
+      path: `./.env.${isDev ? 'dev' : isProd ? 'prod' : 'uat'}`,
+    }),
   ],
 
   optimization: {
-    runtimeChunk: true,
+    runtimeChunk: true, // 抽离webpack的runtime代码
     // 指定需要进行分块的代码，和分块后文件名
     splitChunks: {
+      chunks: 'all', // 异步、非异步均纳入抽离范围
+      minSize: 0, // 抽离包大小下限不做限制，30k以下的也抽离
+      maxSize: 80000, // 抽离包大小上限，抽离后大小若超过上限，且包含多个可再拆分的模块时，会再次拆分，保证单个文件不会过大
       cacheGroups: {
         default: false,
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor',
-           chunks: 'all'
-         }
-       }
+          chunks: 'all'
+        }
+      },
     },
 
     minimizer: [
@@ -196,8 +173,25 @@ const webpackConfig: webpack.Configuration = {
       }),
 
       new OptimizeCSSAssetsPlugin(),
-    ]
-  }
-}
+    ],
+  },
 
-export default webpackConfig;
+  devServer: {
+    port: 8080,
+    host: 'localhost',
+    publicPath: '/',
+    contentBase: './src',
+    historyApiFallback: true,
+    open: false,
+    proxy: {
+      '/wechatBH': {
+        target: 'http://wx-test.by-health.com/',
+        changeOrigin: true,
+      },
+      '/scrm': {
+        target: 'http://wx-test1.by-health.com/',
+        changeOrigin: true,
+      },
+    },
+  },
+};
