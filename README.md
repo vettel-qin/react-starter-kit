@@ -1,3 +1,1 @@
-# jianliduo-portal-mobile
-
-健力多移动官网
+# Typescript react redux
