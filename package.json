@@ -13,13 +13,16 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.2.0",
+    "@types/react-redux": "^7.0.5",
     "classnames": "^2.2.6",
     "core-js": "^2.6.1",
     "extend": "^3.0.2",
     "react": "16.8.0-alpha.0",
     "react-dom": "16.8.0-alpha.0",
+    "react-redux": "^6.0.1",
     "react-router-dom": "^4.3.1",
     "react-transition-group": "^2.5.0",
+    "redux": "^4.0.1",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
@@ -40,7 +43,6 @@
     "@types/react-dom": "^16.0.11",
     "@types/react-hot-loader": "^4.1.0",
     "@types/react-router-dom": "^4.3.1",
-    "@types/react-slick": "^0.23.2",
     "@types/react-transition-group": "^2.0.14",
     "@types/uglifyjs-webpack-plugin": "^1.1.0",
     "@types/webpack": "^4.4.20",
@@ -80,7 +82,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config tools/webpack.config.ts --dev",
-    "build": "rm -rf ./build & webpack --config tools/webpack.config.ts --prod",
+    "build": "webpack --config tools/webpack.config.ts --prod",
     "build:uat": "rm -rf ./build & webpack --config tools/webpack.config.ts --uat",
     "lint:ts": "tslint \"{src, tools}/**/*.{ts,tsx}\"",
     "lint:css": "stylelint \"{src,tools}/**/*.{css,less,scss,sass}\"",
